@@ -237,22 +237,60 @@ declare const enum HttpStatusCode {
   HttpVersionNotSupported = 505
 }
 
-
-type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'HEAD' | 'PATCH' | 'PUT' | 'OPTIONS' | 'TRACE';
+type HttpMethods = 'GET' | 'POST' | 'DELETE' | 'HEAD' | 'PATCH' | 'PUT' | 'OPTIONS' | 'TRACE';
+// type HttpMethods = HttpMethod.GET | HttpMethod.POST | HttpMethod.DELETE | HttpMethod.HEAD | HttpMethod.PATCH | HttpMethod.PUT | HttpMethod.OPTIONS | HttpMethod.TRACE;
+declare const enum HttpMethod {
+  GET = "GET",
+  POST = "POST",
+  DELETE = "DELETE",
+  HEAD = "HEAD",
+  PATCH = "PATCH",
+  PUT = "PUT",
+  OPTIONS = "OPTIONS",
+  TRACE = "TRACE",
+}
 
 /**
  * Represents a HTTP request.
  */
-interface HttpRequest<TRequest> {
-  method: HttpMethod;
-  params: any;
-  query: any;
-  body: TRequest;
+
+interface HttpRequest<TBody= any> {
+  originalUrl?: string;
+  method: HttpMethods;
+  query?: {
+    [key: string]: any;
+  };
+  headers?: {
+    [key: string]: any;
+  };
+  body?: TBody;
+  params?: {
+    [key: string]: any;
+  };
+  rawBody?: any;
 }
 
-interface HttpResponse<TBody> {
-  status: HttpStatusCode;
-  body: TBody;
+declare const enum HttpContentTypes {
+  json = 'application/json'
+}
+
+interface HttpResponse<TBody= any> {
+  status: HttpStatusCode | number,
+  body: TBody,
+  headers?: {
+    'content-type'?: string,
+    'content-length'?: number,
+    'content-disposition'?: string,
+    'content-encoding'?: string,
+    'content-language'?: string,
+    'content-range'?: string,
+    'content-location'?: string,
+    'content-md5'?: Buffer,
+    'expires'?: Date,
+    'last-modified'?: Date,
+    [key: string]: any,
+  },
+  isRaw?: boolean,
 }
 
 interface ILogger {
@@ -260,17 +298,21 @@ interface ILogger {
   (format: string, ...param: any[]): void;
 }
 
-interface Context<TRequest = any, TResponse = any> {
-  invocationId: string;
+interface ContextBindings {
   bindingData: any;
   bindings: any;
+  bind?(...args: Array<any>): void;
+}
 
-  res: HttpResponse<TResponse>;
-  req: HttpRequest<TRequest>;
+interface Context<TRequestBody = any, TResponseBody = any> extends ContextBindings {
+  invocationId: string;
+
+  res: HttpResponse<TResponseBody>;
+  req: HttpRequest<TRequestBody>;
 
   log: ILogger;
 
-  done(err?: Error | undefined, res?: HttpResponse<TResponse>): void;
+  done(err?: Error | undefined, res?: HttpResponse<TResponseBody>): void;
 }
 
 
