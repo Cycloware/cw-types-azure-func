@@ -1,6 +1,6 @@
 {
    "name": "@cw-types/azure-func",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "author": "Kavan J. Shaban (Cycloware, LLC)",
    "description": "Typings library for Azure Functions",
    "homepage": "https://github.com/Cycloware/cw-types-azure-func",

@@ -1,6 +1,6 @@
 # Installation
- 
-> First, run `npm install --save @cw-types/ambient-types`
+
+> First, run `npm install --save @cw-types/azure-func`
 
 
 >Then, you must add `node_modules/@cw-types` to your `tsconifg.json` file, like so:
@@ -12,56 +12,44 @@
 ```
 > This will enable the Typescript compiler to find and use this typing since it is not installed under `node_modules/@types`.
 
-> Please note the order is important of the entries in `typeRoots`.  If you want `node_modules/@types` to resolve first then move it up top. 
+> Please note the order is important of the entries in `typeRoots`.  If you want `node_modules/@types` to resolve first then move it up top.
 
 # Summary
 
-> Typings library for common ambient (global) types.
+> Typings library for Azure Function Applications
 
 
 > Here are some examples:
 
 ```typescript
-// All primitive types
-type TPrimitive = boolean | number | string | symbol;
+import '@cw-types/azure-func';
+import * as moment from 'moment';
 
-type TNullOrUndefined = null | undefined;
+export async function run(context: Context<IData>, data: IData): Promise<void> {
+export async function run(context: Context<IData>, data: IData): Promise<void> {
 
-type TPrimitiveAll = TPrimitive | TNullOrUndefined;
+    context.log(`starting function '${context.req.method}'=>'${context.req.method}'...`)
+    if (data.first && data.last) {
+        context.res = {
+            status: 200,
+            body: { greeting: `Hello ${data.first} ${data.last}!` }
+        };
+    }
+    else {
+        context.res = {
+            status: 400,
+            body: { error: "Please pass first/last properties in the input object" }
+        }
+    }
+    context.done();
+}
 
-type TNotVoid = object | TPrimitiveAll;
-
-type ReadonlyRecurse<T> = {readonly [P in keyof T]: ReadonlyRecurse<T>; }
-type PartialRecurse<T> = {[P in keyof T]?: PartialRecurse<T[P]>; }
-
-/**
- * Cycle all properties in T to make them a flat type from
- * a union of many types.
- */
-type Cycle<T> = {
-  [P in keyof T]: T[P];
-};
-
-/**
- * Make all properties in T Required
- */
-type Required<T> = {
-  [P in keyof T]: T[P];
-};
-
-type TEmptyObject = {};
-
-
-type RecordOf<TObj, TValue> = {[P in keyof TObj]: TValue; };
-
-type TIndexerTo<T> = { [key: string]: T; };
-type TIndexerToAny = TIndexerTo<any>;
-type TIndexerToString = TIndexerTo<string>;
-type TIndexerToBoolean = TIndexerTo<boolean>;
-type TIndexerToNumber = TIndexerTo<number>;
-type TIndexerToObject = TIndexerTo<object>;
+interface IData {
+    first: string;
+    last: string;
+}
 
 ```
 
 # Maintainers
-This project is mainted by [Kavan J. Shaban](https://github.com/kavanshaban) at [Cycloware](https://github.com/cycloware) 
+This project is mainted by [Kavan J. Shaban](https://github.com/kavanshaban) at [Cycloware](https://github.com/cycloware)
